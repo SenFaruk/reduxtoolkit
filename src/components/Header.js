@@ -19,7 +19,8 @@ const Header = () => {
         m:'auto',
         borderRadius: "30px",
         border:"6px solid blue",
-
+        mt:15,
+        
     }}>
 
    

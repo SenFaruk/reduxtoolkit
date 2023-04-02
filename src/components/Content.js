@@ -4,53 +4,36 @@ import Checkbox from "@mui/material/Checkbox";
 import Typography from "@mui/material/Typography";
 import { Box } from "@mui/material";
 
+import { useSelector } from "react-redux";
+
 const Content = () => {
+  const items = useSelector((state) => state.todos.items);
+  console.log(items);
   return (
     <>
-    <Box sx={{
-        display:"flex",
-        flexDirection: "column",
-        justifyContent:"space-between",
-        alignItems:"flex-start",
-    }}>
-
- 
       <Box
         sx={{
           display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
+          flexDirection: "column",
+          justifyContent: "space-between",
+          alignItems: "flex-start",
         }}
       >
-        <FormControlLabel label="" control={<Checkbox color="primary" />} />
-        <Typography variant="body1" color="initial">
-          learn react
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <FormControlLabel label="" control={<Checkbox color="primary" />} />
-        <Typography variant="body1" color="initial">
-         dayımıasın ağa mısın onu sorun
-        </Typography>
-      </Box>
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <FormControlLabel label="" control={<Checkbox color="primary" />} />
-        <Typography variant="body1" color="initial">
-         dayıları kıralı
-        </Typography>
-      </Box>
+        {items.map((item, index) => (
+          <Box
+            key={index}
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <FormControlLabel label="" control={<Checkbox color="primary" />} />
+            <Typography variant="body1" color="initial">
+              {index + 1} - {item.title}
+            </Typography>
+          </Box>
+        ))}
       </Box>
     </>
   );
