@@ -1,18 +1,35 @@
 import { TextField, InputAdornment, IconButton, Box } from "@mui/material";
 import { Search } from "@mui/icons-material";
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import React from "react";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import React,{useState} from "react";
+import { useDispatch } from "react-redux";
+import { addTodo } from "../redux/todos/todosSlice";
+import { nanoid } from "@reduxjs/toolkit";
 
 const Form = () => {
+  const [title, setTitle] = useState('')
+  console.log(title)
+
+  const dispatch = useDispatch();
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(addTodo({ id: nanoid(), title, completed: false }))
+    setTitle('');
+  };
   return (
-    <Box sx={{
-       display: "flex",
-       justifyContent: "center",
-       alignItems: "center",
-    }}>
+   
+
+    <>
+      <form onSubmit={handleSubmit}>
       <TextField
+     
         id="input-with-icon-textfield"
         label="todos"
+        value={title}
+        onChange={(e)=>setTitle(e.target.value)}
+        placeholder="what needs to be done"
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -23,7 +40,8 @@ const Form = () => {
           ),
         }}
       />
-    </Box>
+      </form>
+    </>
   );
 };
 

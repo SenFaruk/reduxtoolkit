@@ -156,7 +156,7 @@ import { useSelector } from "react-redux";
 
 ```
 
-import dedelim.ve
+import edelim.ve
 
 ```
 const items = useSelector(state=>state.todos.items);
@@ -393,3 +393,106 @@ export default todosSlice.reducer;
 bunları oluşturduk
 
 bunları kullanırkende <useSelector> isimli hook u kullandık
+
+# yeni todo elemanı eklemek
+şimdide input umuzu kullanarak başka kayıtlar yapmaya çalişalım.
+ form submit edildiği anda eklenmesini bekliyoruz.
+ reducer kısmında yeni bir tanım yapacağız.burada yazacağımız fonsiyonuda gidip Form.js form componentinde kullanacağız.dispatch ederek kullanacağız.
+
+ # redux/todos/todosSlice.js
+ ````
+ import { createSlice } from "@reduxjs/toolkit";
+
+export const todosSlice = createSlice({
+  name: "todos",
+  initialState: {
+    items: [
+      {
+        id: "1",
+        title: "learn polinomlar",
+      },
+      {
+        id: "2",
+        title: "learn algoritma",
+      },
+    ],
+  },
+  reducers: {
+    addTodo: (state, action) => {
+      state.items.push(action.payload);
+    },
+  },
+});
+
+export const {addTodo} = todosSlice.actions;
+
+export default todosSlice.reducer;
+````
+
+bu slice ta bir addTodo adındabir reducer tanımdık. burada"addTodo" eylemi tanımlanmıştır. Bu eylem, state içindeki "items" dizisine bir öğe ekler.
+
+Son olarak, todosSlice.actions nesnesi, slice için tanımlanmış olan eylemleri içerir. Burada, sadece "addTodo" eylemi tanımlanmıştır.
+
+Bu slice, birçok parçadan oluşan bir Redux mağazasında kullanılabilir. "addTodo" eylemi çağrıldığında, state içindeki "items" dizisi güncellenir ve yeni bir öğe eklenir.
+# components/Form.js
+````
+import { TextField, InputAdornment, IconButton, Box } from "@mui/material";
+import { Search } from "@mui/icons-material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import React,{useState} from "react";
+import { useDispatch } from "react-redux";
+import { addTodo } from "../redux/todos/todosSlice";
+import { nanoid } from "@reduxjs/toolkit";
+
+const Form = () => {
+  const [title, setTitle] = useState('')
+  console.log(title)
+
+  const dispatch = useDispatch();
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    dispatch(addTodo({ id: nanoid(), title, completed: false }))
+    setTitle('');
+  };
+  return (
+   
+
+    <>
+      <form onSubmit={handleSubmit}>
+      <TextField
+     
+        id="input-with-icon-textfield"
+        label="todos"
+        value={title}
+        onChange={(e)=>setTitle(e.target.value)}
+        placeholder="what needs to be done"
+        InputProps={{
+          startAdornment: (
+            <InputAdornment position="start">
+              <IconButton>
+                <KeyboardArrowDownIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
+      </form>
+    </>
+  );
+};
+
+export default Form;
+````
+Bu kod, MUI TextField bileşenini kullanarak bir form oluşturur. Bu form, yeni bir todo öğesi eklemek için kullanılır.
+
+Form bileşeni, useState hook'unu kullanarak bir title adında bir değişken oluşturur. Bu değişken, kullanıcının girdiği todo öğesinin başlığını tutar. console.log fonksiyonu, title değişkeninin değerini konsolda görüntüler.
+
+Form bileşeni, useDispatch hook'unu kullanarak dispatch adında bir değişken oluşturur. Bu değişken, Redux mağazasındaki addTodo işlevini çağırmak için kullanılır.
+
+handleSubmit fonksiyonu, form gönderildiğinde çağrılır. Bu fonksiyon, addTodo işlevini kullanarak yeni bir todo öğesi ekler. Bu işlem, title değişkeninin değerini kullanır ve tamamlanmamış olarak ayarlanan bir rastgele id değeri oluşturur. Son olarak, title değişkeninin değeri temizlenir ve kullanıcıya yeni bir todo öğesi eklemek için hazır bir form gösterilir.
+
+TextField bileşeni, kullanıcıdan todo öğesi başlığı girmesini bekler ve bu girdiyi title değişkenine aktarır. Ayrıca, InputAdornment ve IconButton bileşenlerini kullanarak açılır menüyü ve ok simgesini görüntüler.
+
+Bu bileşen, uygulamanın geri kalanında kullanılabilir ve yeni todo öğeleri eklemek için kullanılabilir.

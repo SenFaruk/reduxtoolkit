@@ -8,7 +8,7 @@ import { useSelector } from "react-redux";
 
 const Content = () => {
   const items = useSelector((state) => state.todos.items);
-  console.log(items);
+  
   return (
     <>
       <Box
@@ -30,7 +30,7 @@ const Content = () => {
           >
             <FormControlLabel label="" control={<Checkbox color="primary" />} />
             <Typography variant="body1" color="initial">
-              {index + 1} - {item.title}
+              {index + 1} - {item.title}- {item.id}
             </Typography>
           </Box>
         ))}
