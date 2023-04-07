@@ -496,3 +496,104 @@ handleSubmit fonksiyonu, form gönderildiğinde çağrılır. Bu fonksiyon, addT
 TextField bileşeni, kullanıcıdan todo öğesi başlığı girmesini bekler ve bu girdiyi title değişkenine aktarır. Ayrıca, InputAdornment ve IconButton bileşenlerini kullanarak açılır menüyü ve ok simgesini görüntüler.
 
 Bu bileşen, uygulamanın geri kalanında kullanılabilir ve yeni todo öğeleri eklemek için kullanılabilir.
+# Toggle İşlemlerinin Yapılması
+bir item ı tamamlandı olarak nasıl işaretleriz ona bakacağız
+toggle active se de active de active ise active şeklinde birşey..
+o zaman slice ımıza gidelim yeni bir reducer ekleyelim
+
+ # redux/todos/todosSlice.js
+
+ ````
+ import { createSlice } from "@reduxjs/toolkit";
+
+export const todosSlice = createSlice({
+  name: "todos",
+  initialState: {
+    items: [
+      {
+        id: "1",
+        title: "learn polinomlar",
+        completed: false,
+      },
+      {
+        id: "2",
+        title: "learn algoritma",
+        completed: false,
+      },
+    ],
+  },
+  reducers: {
+    addTodo: (state, action) => {
+      state.items.push(action.payload);
+    },
+    toggle: (state, action) => {
+      const { id } = action.payload;
+      const item = state.items.find((item) => item.id === id);
+      item.completed = !item.completed;
+    },
+  },
+});
+
+export const { addTodo, toggle } = todosSlice.actions;
+
+export default todosSlice.reducer;
+````
+toggle action türü: Bu action, bir todo öğesinin tamamlanma durumunu değiştirmek için kullanılır. action.payload üzerinden değiştirilmek istenen todo öğesinin id değerine erişilir. state.items dizisinde, find() metodunu kullanarak ilgili todo öğesini buluruz. Ardından, todo öğesinin completed (tamamlanma durumu) alanını tersine çevirerek tamamlanma durumunu değiştiririz. Böylece, ilgili todo öğesinin tamamlanma durumu güncellenmiş olur.
+
+# src/components/Content.js
+````
+import React from "react";
+
+import Checkbox from "@mui/material/Checkbox";
+import Typography from "@mui/material/Typography";
+import { Box } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import { toggle } from "../redux/todos/todosSlice";
+
+const Content = () => {
+  const dispatch = useDispatch();
+  const items = useSelector((state) => state.todos.items);
+
+  const handleCheckboxChange = (id) => {
+    dispatch(toggle({ id }));
+  };
+
+  return (
+    <>
+      {items.map((item, index) => (
+        <Box
+          key={item.id}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Checkbox
+            checked={item.completed}
+            onChange={() => handleCheckboxChange(item.id)}
+            inputProps={{
+              "aria-label": "controlled",
+            }}
+          />
+
+          <Typography
+            variant="body1"
+            color="initial"
+            sx={{
+              textDecoration: item.completed ? "line-through" : "none",
+            }}
+          >
+            {index + 1} - {item.title}
+          </Typography>
+        </Box>
+      ))}
+    </>
+  );
+};
+
+export default Content;
+````
+
+
+

@@ -1,40 +1,49 @@
 import React from "react";
-import FormControlLabel from "@mui/material/FormControlLabel";
+
 import Checkbox from "@mui/material/Checkbox";
 import Typography from "@mui/material/Typography";
 import { Box } from "@mui/material";
-
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { toggle } from "../redux/todos/todosSlice";
 
 const Content = () => {
+  const dispatch = useDispatch();
   const items = useSelector((state) => state.todos.items);
-  
+
+  const handleCheckboxChange = (id) => {
+    dispatch(toggle({ id }));
+  };
+
   return (
     <>
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "space-between",
-          alignItems: "flex-start",
-        }}
-      >
-        {items.map((item, index) => (
-          <Box
-            key={index}
+      {items.map((item, index) => (
+        <Box
+          key={item.id}
+          sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <Checkbox
+            checked={item.completed}
+            onChange={() => handleCheckboxChange(item.id)}
+            inputProps={{
+              "aria-label": "controlled",
+            }}
+          />
+
+          <Typography
+            variant="body1"
+            color="initial"
             sx={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
+              textDecoration: item.completed ? "line-through" : "none",
             }}
           >
-            <FormControlLabel label="" control={<Checkbox color="primary" />} />
-            <Typography variant="body1" color="initial">
-              {index + 1} - {item.title}- {item.id}
-            </Typography>
-          </Box>
-        ))}
-      </Box>
+            {index + 1} - {item.title}
+          </Typography>
+        </Box>
+      ))}
     </>
   );
 };

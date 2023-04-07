@@ -7,10 +7,12 @@ export const todosSlice = createSlice({
       {
         id: "1",
         title: "learn polinomlar",
+        completed: false,
       },
       {
         id: "2",
         title: "learn algoritma",
+        completed: false,
       },
     ],
   },
@@ -18,9 +20,14 @@ export const todosSlice = createSlice({
     addTodo: (state, action) => {
       state.items.push(action.payload);
     },
+    toggle: (state, action) => {
+      const { id } = action.payload;
+      const item = state.items.find((item) => item.id === id);
+      item.completed = !item.completed;
+    },
   },
 });
 
-export const {addTodo} = todosSlice.actions;
+export const { addTodo, toggle } = todosSlice.actions;
 
 export default todosSlice.reducer;
