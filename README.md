@@ -595,5 +595,134 @@ const Content = () => {
 export default Content;
 ````
 
+# silme işlemleri
 
+öncelikle slice ımızı tanımladık
+ # redux/todos/todosSlice.js
+
+ 
+````
+import { createSlice } from "@reduxjs/toolkit";
+
+export const todosSlice = createSlice({
+  name: "todos",
+  initialState: {
+    items: [
+      {
+        id: "1",
+        title: "learn polinomlar",
+        completed: false,
+      },
+      {
+        id: "2",
+        title: "learn algoritma",
+        completed: false,
+      },
+    ],
+  },
+  reducers: {
+    addTodo: (state, action) => {
+      state.items.push(action.payload);
+    },
+    toggle: (state, action) => {
+      const { id } = action.payload;
+      const item = state.items.find((item) => item.id === id);
+      item.completed = !item.completed;
+    },
+
+    destroy: (state, action) => {
+      const id = action.payload;
+      const filtered = state.items.filter((item) => item.id !== id);
+      state.items = filtered;
+    },
+  },
+});
+
+export const { addTodo, toggle, destroy } = todosSlice.actions;
+
+export default todosSlice.reducer;
+````
+
+destroy action türü, bir todo öğesini silmek için kullanılır. action.payload üzerinden silinmek istenen todo öğesinin id değerine erişilir. state.items dizisinde, filter() metodu kullanılarak silinmek istenen todo öğesinin filtrelenmiş bir kopyası oluşturulur. filter() metodu, bir dizi üzerinde belirli bir koşulu sağlayan elemanları filtreler ve yeni bir dizi döndürür.
+
+Burada, state.items dizisindeki todo öğeleri üzerinde item.id !== id koşulu kullanılarak, silinmek istenen todo öğesinin id değerine eşit olmayan todo öğeleri filtrelenir ve filtered adlı yeni bir dizi oluşturulur. Daha sonra, state.items dizisi filtered dizisi ile güncellenir, böylece silinmek istenen todo öğesi state.items dizisinden çıkarılır.
+# src/components/Content.js
+
+````
+import React from "react";
+
+import Checkbox from "@mui/material/Checkbox";
+import Typography from "@mui/material/Typography";
+import { Box, Button } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import { destroy, toggle } from "../redux/todos/todosSlice";
+
+const Content = () => {
+  const dispatch = useDispatch();
+  const items = useSelector((state) => state.todos.items);
+
+  const handleCheckboxChange = (id) => {
+    dispatch(toggle({ id }));
+  };
+  const handleDestroy = (id) => {
+    if (window.confirm("Are you sure ")) {
+      dispatch(destroy(id));
+    }
+  };
+
+  return (
+    <>
+      {items.map((item, index) => (
+        <Box
+          key={item.id}
+          sx={{
+            width: "80%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            borderBottom: "3px solid black",
+            mb: 3,
+          }}
+        >
+          <Box
+            sx={{
+              width: "60%",
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
+            }}
+          >
+            <Checkbox
+              checked={item.completed}
+              onChange={() => handleCheckboxChange(item.id)}
+              inputProps={{
+                "aria-label": "controlled",
+              }}
+            />
+
+            <Typography
+              variant="body1"
+              color="initial"
+              sx={{
+                textDecoration: item.completed ? "line-through" : "none",
+              }}
+            >
+              {index + 1} - {item.title}
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleDestroy(item.id)}
+          >
+            sil
+          </Button>
+        </Box>
+      ))}
+    </>
+  );
+};
+
+export default Content;
+````
 

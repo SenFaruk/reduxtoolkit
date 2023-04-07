@@ -2,9 +2,9 @@ import React from "react";
 
 import Checkbox from "@mui/material/Checkbox";
 import Typography from "@mui/material/Typography";
-import { Box } from "@mui/material";
+import { Box, Button } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { toggle } from "../redux/todos/todosSlice";
+import { destroy, toggle } from "../redux/todos/todosSlice";
 
 const Content = () => {
   const dispatch = useDispatch();
@@ -13,6 +13,11 @@ const Content = () => {
   const handleCheckboxChange = (id) => {
     dispatch(toggle({ id }));
   };
+  const handleDestroy = (id) => {
+    if (window.confirm("Are you sure ")) {
+      dispatch(destroy(id));
+    }
+  };
 
   return (
     <>
@@ -20,28 +25,47 @@ const Content = () => {
         <Box
           key={item.id}
           sx={{
+            width: "80%",
             display: "flex",
-            justifyContent: "center",
+            justifyContent: "space-between",
             alignItems: "center",
+            borderBottom: "3px solid black",
+            mb: 3,
           }}
         >
-          <Checkbox
-            checked={item.completed}
-            onChange={() => handleCheckboxChange(item.id)}
-            inputProps={{
-              "aria-label": "controlled",
-            }}
-          />
-
-          <Typography
-            variant="body1"
-            color="initial"
+          <Box
             sx={{
-              textDecoration: item.completed ? "line-through" : "none",
+              width: "60%",
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
             }}
           >
-            {index + 1} - {item.title}
-          </Typography>
+            <Checkbox
+              checked={item.completed}
+              onChange={() => handleCheckboxChange(item.id)}
+              inputProps={{
+                "aria-label": "controlled",
+              }}
+            />
+
+            <Typography
+              variant="body1"
+              color="initial"
+              sx={{
+                textDecoration: item.completed ? "line-through" : "none",
+              }}
+            >
+              {index + 1} - {item.title}
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleDestroy(item.id)}
+          >
+            sil
+          </Button>
         </Box>
       ))}
     </>
