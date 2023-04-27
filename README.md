@@ -268,7 +268,7 @@ export const todosSlice = createSlice({
 export default todosSlice.reducer;
 ```
 
-![alt text](./fotos/1.jpg)
+![](./fotos/1.jpg)
 
 girdiğimiz initial stateleri konsolda gördük.
 artık ben bunları ekrana yazdırabilirim
@@ -325,23 +325,23 @@ export default Content;
 
 ```
 
-Bu bileşen, useSelector hooks'unu kullanarak Redux store'dan todos slice'ındaki items state'ini seçer ve her bir öğeyi checkbox ve metin etiketi ile birlikte görüntüler.
+>Bu bileşen, useSelector hooks'unu kullanarak Redux store'dan todos slice'ındaki items state'ini seçer ve her bir öğeyi checkbox ve metin etiketi ile birlikte görüntüler.
 
-Box bileşeni, MUI kütüphanesinden ithal edilir ve sayfada düzenleme için kullanılır. Box bileşeni, Flexbox özellikleri ile birlikte gelir.
+>Box bileşeni, MUI kütüphanesinden ithal edilir ve sayfada düzenleme için kullanılır. Box bileşeni, Flexbox özellikleri ile birlikte gelir.
 
-Bileşen, items.map() fonksiyonunu kullanarak items dizisindeki her bir öğeyi render eder. Her öğe, bir FormControlLabel bileşeni içinde bir Checkbox ve bir Typography etiketi ile sarılır.
+>Bileşen, items.map() fonksiyonunu kullanarak items dizisindeki her bir öğeyi render eder. Her öğe, bir FormControlLabel bileşeni içinde bir Checkbox ve bir Typography etiketi ile sarılır.
 
-Typography bileşeni, MUI kütüphanesinden gelen bir bileşendir ve metinleri düzenlemek için kullanılır. Burada, item.id ve item.title özellikleri Typography etiketi içinde görüntülenir.
+>Typography bileşeni, MUI kütüphanesinden gelen bir bileşendir ve metinleri düzenlemek için kullanılır. Burada, item.id ve item.title özellikleri Typography etiketi içinde görüntülenir.
 
-Sonuç olarak, Content bileşeni, items dizisindeki öğeleri checkbox ve metin etiketiyle görüntüler ve kullanıcının bu öğeleri seçmesine olanak tanır.
+>Sonuç olarak, Content bileşeni, items dizisindeki öğeleri checkbox ve metin etiketiyle görüntüler ve kullanıcının bu öğeleri seçmesine olanak tanır.
 
-bu noktada map() fonksiyonundan mahsetmek istiyorum.
+>bu noktada map() fonksiyonundan mahsetmek istiyorum.
 
-map() fonksiyonunun ikinci parametresi olan index, döngü içinde bulunan öğenin dizindeki sırasını belirtir. Yani, items dizisindeki her bir öğenin kaçıncı sırada olduğunu temsil eder.
+>map() fonksiyonunun ikinci parametresi olan index, döngü içinde bulunan öğenin dizindeki sırasını belirtir. Yani, items dizisindeki her bir öğenin kaçıncı sırada olduğunu temsil eder.
 
-Bu parametre, özellikle React bileşenlerinde birden çok öğe render etmek için key prop'unu belirlemek için kullanılır. key prop, React tarafından her bir öğenin benzersiz bir şekilde tanımlanması için gereklidir ve performansı artırmak için kullanılır.
+>Bu parametre, özellikle React bileşenlerinde birden çok öğe render etmek için key prop'unu belirlemek için kullanılır. key prop, React tarafından her bir öğenin benzersiz bir şekilde tanımlanması için gereklidir ve performansı artırmak için kullanılır.
 
-Örneğin, key prop'u, items.map() fonksiyonunun döndürdüğü bileşenlerin her birine atanabilir:
+>Örneğin, key prop'u, items.map() fonksiyonunun döndürdüğü bileşenlerin her birine atanabilir:
 
 ```
 {items.map((item, index) => (
