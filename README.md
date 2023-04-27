@@ -268,7 +268,7 @@ export const todosSlice = createSlice({
 export default todosSlice.reducer;
 ```
 
-![](./fotos/1.jpg)
+![alt text](./fotos/1.jpg)
 
 girdiğimiz initial stateleri konsolda gördük.
 artık ben bunları ekrana yazdırabilirim
@@ -395,6 +395,8 @@ bunları oluşturduk
 bunları kullanırkende <useSelector> isimli hook u kullandık
 
 # yeni todo elemanı eklemek
+
+
 şimdide input umuzu kullanarak başka kayıtlar yapmaya çalişalım.
  form submit edildiği anda eklenmesini bekliyoruz.
  reducer kısmında yeni bir tanım yapacağız.burada yazacağımız fonsiyonuda gidip Form.js form componentinde kullanacağız.dispatch ederek kullanacağız.
