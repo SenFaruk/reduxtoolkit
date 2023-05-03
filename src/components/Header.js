@@ -4,6 +4,7 @@ import {Typography, Box} from "@mui/material/";
 
 import Form from "./Form";
 import Content from "./Content";
+import ContentFooter from "./ContentFooter";
 
 const Header = () => {
   return (
@@ -37,6 +38,7 @@ const Header = () => {
 
      <Form/>
      <Content/>
+     <ContentFooter/>
      </Box>
     </>
   );

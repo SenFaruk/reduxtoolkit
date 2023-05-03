@@ -6,9 +6,12 @@ import { Box, Button } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { destroy, toggle } from "../redux/todos/todosSlice";
 
+let filtered = [];
+
 const Content = () => {
   const dispatch = useDispatch();
   const items = useSelector((state) => state.todos.items);
+  const activeFilter = useSelector((state) => state.todos.activeFilter);
 
   const handleCheckboxChange = (id) => {
     dispatch(toggle({ id }));
@@ -19,9 +22,17 @@ const Content = () => {
     }
   };
 
+  filtered = items;
+  if (activeFilter !== "all") {
+    filtered = items.filter((todo) =>
+      activeFilter === "active"
+        ? todo.completed === false
+        : todo.completed === true
+    );
+  }
   return (
     <>
-      {items.map((item, index) => (
+      {filtered.map((item, index) => (
         <Box
           key={item.id}
           sx={{
