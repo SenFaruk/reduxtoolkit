@@ -916,18 +916,18 @@ onun için yeni bir reducer tanımlamaltıyım.
 changeActiveFilter: (state, action) => {
       state.activeFilter = action.payload;
     },
-````    [^1]
-[^1]: Bu kod bloğu bir Redux Toolkit eylem yaratıcısı (action creator) içinde yer alır ve Redux store'da yer alan "todos" adlı bir durumun ("state") "activeFilter" özelliğini güncellemek için kullanılır.
+````    
+>Bu kod bloğu bir Redux Toolkit eylem yaratıcısı (action creator) içinde yer alır ve Redux store'da yer alan "todos" adlı bir durumun ("state") "activeFilter" özelliğini güncellemek için kullanılır.
 
-Bu eylem yaratıcısı, "changeActiveFilter" adı altında tanımlanmıştır ve iki parametre alır: "state" ve "action". "state" parametresi, Redux store'daki mevcut durumu temsil eder ve "action" parametresi, store'da gerçekleştirilecek olan eylemi temsil eder.
+>Bu eylem yaratıcısı, "changeActiveFilter" adı altında tanımlanmıştır ve iki parametre alır: "state" ve "action". "state" parametresi, Redux store'daki mevcut durumu temsil eder ve "action" parametresi, store'da gerçekleştirilecek olan eylemi temsil eder.
 
-Bu eylem yaratıcısı, "action.payload" üzerinden bir veri yüklemesi (payload) alır. Bu veri yüklemesi, "activeFilter" özelliğinin yeni değeri olarak atanır.
+>Bu eylem yaratıcısı, "action.payload" üzerinden bir veri yüklemesi (payload) alır. Bu veri yüklemesi, "activeFilter" özelliğinin yeni değeri olarak atanır.
 
-Örneğin, aşağıdaki gibi bir eylem kullanılarak "activeFilter" özelliği güncellenebilir:
+>Örneğin, aşağıdaki gibi bir eylem kullanılarak "activeFilter" özelliği güncellenebilir:
 ````
 dispatch(changeActiveFilter('completed'));
 ````
-Burada "changeActiveFilter" eylemi "completed" değeri ile çağrılır. Bu, Redux store'daki "activeFilter" özelliğinin "completed" olarak güncellenmesini tetikler. Yani, eğer önceki "activeFilter" özelliği "all" veya "active" ise, bu eylem sonrasında "activeFilter" özelliği "completed" olur.
+>Burada "changeActiveFilter" eylemi "completed" değeri ile çağrılır. Bu, Redux store'daki "activeFilter" özelliğinin "completed" olarak güncellenmesini tetikler. Yani, eğer önceki "activeFilter" özelliği "all" veya "active" ise, bu eylem sonrasında "activeFilter" özelliği "completed" olur.
 
 
 
