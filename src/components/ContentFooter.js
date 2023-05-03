@@ -35,9 +35,9 @@ const ContentFooter = () => {
             justifyContent: "space-between",
           }}
         >
-          <Button onClick = {()=>dispatch(changeActiveFilter('all'))}>All</Button>
-          <Button onClick = {()=>dispatch(changeActiveFilter('active'))}>active</Button>
-          <Button onClick = {()=>dispatch(changeActiveFilter('completed'))}>completed</Button>
+          <Button color={activeFilter === 'all' ? 'error' : 'primary'} onClick = {()=>dispatch(changeActiveFilter('all'))}>All</Button>
+          <Button color={activeFilter === 'active' ? 'error' : 'primary'}onClick = {()=>dispatch(changeActiveFilter('active'))}>active</Button>
+          <Button color={activeFilter === 'completed' ? 'error' : 'primary'}onClick = {()=>dispatch(changeActiveFilter('completed'))}>completed</Button>
         </Box>
         <Box>
           <Button 
