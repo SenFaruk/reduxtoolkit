@@ -731,3 +731,252 @@ export default Content;
 ✅
 [✅](https://www.markdownguide.org/cheat-sheet/)
 
+### filtreleme işlemleri
+"Şu anda, contentFooter bileşenini oluşturma aşamasındayız. Bu bileşen, tamamlanmamış öğeleri, tamamlananları .active olanları, ve birde tamamlananları sil şeklinde buttonları olacak, gibi özelliklerle birlikte kullanılacak.
+
+Şimdi baştan başlayarak, tamamlanmayı bekleyen öğe sayısını göstereceğiz."
+
+öncelikle useSelector u react- reduxtan import ediyoruz.
+
+````
+import { useSelector} from "react-redux";
+````
+React uygulamalarında Redux kütüphanesiyle birlikte kullanılan iki kancayı (hook) içerir: useSelector ve useDispatch.
+
+useSelector kancası, Redux deposundan (store) belirli bir durumu (state) seçmek için kullanılır. Bu durum, uygulama genelinde kullanılan bir veri deposudur ve bu kancayı kullanarak bu depodan belirli bir durumu seçebilirsiniz. Bu durum, genellikle bir fonksiyon aracılığıyla yapılan bir sorgulama ile seçilir. 
+````
+ const items = useSelector((state) => state.todos.items);
+ ````
+
+burada daha önce slice kısmında oluşturduğumuz ismi( name: "todos",) olan.
+initial state deki itemlar seçilmiş. 
+
+Kısacası, useSelector kancası Redux deposundan belirli bir durumu seçmek için kullanıldı.
+
+### redux/todos/todosSlice.js
+````
+import { createSlice } from "@reduxjs/toolkit";
+
+export const todosSlice = createSlice({
+  name: "todos",
+  initialState: {
+    items: [
+      {
+        id: "1",
+        title: "learn polinomlar",
+        completed: false,
+      },
+      {
+        id: "2",
+        title: "learn algoritma",
+        completed: false,
+      },
+    ],
+    activeFilter: "all",
+  },
+  reducers: {
+    addTodo: (state, action) => {
+      state.items.push(action.payload);
+    },
+    toggle: (state, action) => {
+      const { id } = action.payload;
+      const item = state.items.find((item) => item.id === id);
+      item.completed = !item.completed;
+    },
+
+    destroy: (state, action) => {
+      const id = action.payload;
+      const filtered = state.items.filter((item) => item.id !== id);
+      state.items = filtered;
+    },
+    changeActiveFilter: (state, action) => {
+      state.activeFilter = action.payload;
+    },
+    clearCompleted: (state) => {
+      const filtered = state.items.filter((item) => item.completed === false);
+      state.items = filtered;
+    },
+  },
+});
+
+export const { addTodo, toggle, destroy, changeActiveFilter, clearCompleted } =
+  todosSlice.actions;
+
+export default todosSlice.reducer;
+````
+
+sonra bir değişken daha tanımlıyorum.
+
+````
+const itemsLeft = items.filter((item) => !item.completed).length;
+
+````
+Bu kod bloğu, bir dizi öğeyi (items) (todosSlice taki initialstatetekiitems)filtreleyerek tamamlanmamış (completed değeri false olan) öğelerin sayısını hesaplar.
+
+Bu kod bloğu birkaç farklı işlevi bir arada kullanır:
+
+1. items.filter işlevi, öğeler dizisindeki her bir öğeyi, içinde verilen koşullara (burada tamamlanmamış olan öğeler) göre filtreler ve yeni bir dizi döndürür. Bu durumda, filtrelenen öğeler tamamlanmamış öğelerdir.
+
+2. Döndürülen dizi üzerinde .length özelliği kullanılarak, dizideki öğelerin sayısı hesaplanır.
+
+3. Hesaplanan öğe sayısı, itemsLeft değişkenine atanır.
+
+Sonuç olarak, bu kod bloğu, tamamlanmamış öğelerin sayısını hesaplayarak itemsLeft değişkenine atar. Bu sayı, örneğin bir yapılacaklar listesi uygulamasında, tamamlanmamış görevlerin sayısını görüntülemek için kullanılabilir.
+
+şimdi itemsLeft değişkenini neredkullanmak istaresem kullanabilirim
+
+### src/component/ContentFooter.js
+
+````
+import React from "react";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import { Box } from "@mui/material";
+import { useSelector, useDispatch} from "react-redux";
+import { changeActiveFilter, clearCompleted } from "../redux/todos/todosSlice";
+
+const ContentFooter = () => {
+  const items = useSelector((state) => state.todos.items);
+  const itemsLeft = items.filter((item) => !item.completed).length;
+  // ==============
+
+  const activeFilter = useSelector((state) => state.todos.activeFilter);
+  const dispatch = useDispatch();
+
+
+  return (
+    <>
+      <Box
+        sx={{
+          width: "90%",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box>
+          <Typography variant="body1" color="initial">
+            {itemsLeft} item{itemsLeft > 1 && "s"} left
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            width: "30%",
+            justifyContent: "space-between",
+          }}
+        >
+          <Button onClick = {()=>dispatch(changeActiveFilter('all'))}>All</Button>
+          <Button onClick = {()=>dispatch(changeActiveFilter('active'))}>active</Button>
+          <Button onClick = {()=>dispatch(changeActiveFilter('completed'))}>completed</Button>
+        </Box>
+        <Box>
+          <Button 
+          onClick = {()=>dispatch(clearCompleted())}
+          variant="text" color="primary">
+            Clear completed
+          </Button>
+        </Box>
+      </Box>
+    </>
+  );
+};
+
+export default ContentFooter;
+
+````
+
+çoul olduğunda s eklesin onuda yukarı yazdım.
+
+şimdi ise filtreleme olaylarını yapmamız lazım
+statetimiz üzerindae yeni bir tanım daha tutmamız lazım. o andaki active filtre hangisiyse onu bilmemiz lazım bizim.
+todosSliceta initialstate items gibi belirmemiz lazım varsayılan olarak all olsun mesala yukarıdaki koddta görebilirsin.
+
+buttona tıkladığımda renginde değişmesini istiyorum .
+öylr yaptım:
+````
+ <Box
+          sx={{
+            display: "flex",
+            width: "30%",
+            justifyContent: "space-between",
+          }}
+        >
+          <Button color={activeFilter === 'all' ? 'error' : 'primary'} onClick = {()=>dispatch(changeActiveFilter('all'))}>All</Button>
+          <Button color={activeFilter === 'active' ? 'error' : 'primary'}onClick = {()=>dispatch(changeActiveFilter('active'))}>active</Button>
+          <Button color={activeFilter === 'completed' ? 'error' : 'primary'}onClick = {()=>dispatch(changeActiveFilter('completed'))}>completed</Button>
+        </Box>
+````
+
+ternary operatör kullandım .
+
+birde biz initialstate te activeFilter = 'all' vermiştik bununda güncellenmesi gerekiyor.
+
+onun için yeni bir reducer tanımlamaltıyım.
+````
+changeActiveFilter: (state, action) => {
+      state.activeFilter = action.payload;
+    },
+````    [^1]
+[^1]: Bu kod bloğu bir Redux Toolkit eylem yaratıcısı (action creator) içinde yer alır ve Redux store'da yer alan "todos" adlı bir durumun ("state") "activeFilter" özelliğini güncellemek için kullanılır.
+
+Bu eylem yaratıcısı, "changeActiveFilter" adı altında tanımlanmıştır ve iki parametre alır: "state" ve "action". "state" parametresi, Redux store'daki mevcut durumu temsil eder ve "action" parametresi, store'da gerçekleştirilecek olan eylemi temsil eder.
+
+Bu eylem yaratıcısı, "action.payload" üzerinden bir veri yüklemesi (payload) alır. Bu veri yüklemesi, "activeFilter" özelliğinin yeni değeri olarak atanır.
+
+Örneğin, aşağıdaki gibi bir eylem kullanılarak "activeFilter" özelliği güncellenebilir:
+````
+dispatch(changeActiveFilter('completed'));
+````
+Burada "changeActiveFilter" eylemi "completed" değeri ile çağrılır. Bu, Redux store'daki "activeFilter" özelliğinin "completed" olarak güncellenmesini tetikler. Yani, eğer önceki "activeFilter" özelliği "all" veya "active" ise, bu eylem sonrasında "activeFilter" özelliği "completed" olur.
+
+
+
+diyebiliriz
+
+bunu dışa aktarıyoruz
+
+````
+export const { addTodo, toggle, destroy, changeActiveFilter, clearCompleted } =
+  todosSlice.actions;
+````
+
+sonra Contentfooter.js imize gidiyoruz.
+
+importumuazu yapıyoruz.
+
+````
+import { changeActiveFilter, clearCompleted } from "../redux/todos/todosSlice";
+
+````
+bunu kullanmam için dispatch etmem gerekiyor
+````
+import { useSelector, useDispatch} from "react-redux";
+````
+
+bunu kullanmak için bir değişkene atamam lazım:
+````
+const items = useSelector((state) => state.todos.items);
+  const itemsLeft = items.filter((item) => !item.completed).length;
+  // ==============
+
+  const activeFilter = useSelector((state) => state.todos.activeFilter);
+  const dispatch = useDispatch();
+````
+
+buttonların onClicklerinde bunları kulanırsam tabiki dspatch ile buttonları halletmiş olurum tıklandıgında kırmızıya döner..
+
+````
+<Box
+          sx={{
+            display: "flex",
+            width: "30%",
+            justifyContent: "space-between",
+          }}
+        >
+          <Button color={activeFilter === 'all' ? 'error' : 'primary'} onClick = {()=>dispatch(changeActiveFilter('all'))}>All</Button>
+          <Button color={activeFilter === 'active' ? 'error' : 'primary'}onClick = {()=>dispatch(changeActiveFilter('active'))}>active</Button>
+          <Button color={activeFilter === 'completed' ? 'error' : 'primary'}onClick = {()=>dispatch(changeActiveFilter('completed'))}>completed</Button>
+        </Box>
+
+````
+
