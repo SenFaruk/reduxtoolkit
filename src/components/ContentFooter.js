@@ -2,7 +2,7 @@ import React from "react";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { Box } from "@mui/material";
-import { useSelector, useDispatch} from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { changeActiveFilter, clearCompleted } from "../redux/todos/todosSlice";
 
 const ContentFooter = () => {
@@ -12,7 +12,6 @@ const ContentFooter = () => {
 
   const activeFilter = useSelector((state) => state.todos.activeFilter);
   const dispatch = useDispatch();
-
 
   return (
     <>
@@ -35,14 +34,31 @@ const ContentFooter = () => {
             justifyContent: "space-between",
           }}
         >
-          <Button color={activeFilter === 'all' ? 'error' : 'primary'} onClick = {()=>dispatch(changeActiveFilter('all'))}>All</Button>
-          <Button color={activeFilter === 'active' ? 'error' : 'primary'}onClick = {()=>dispatch(changeActiveFilter('active'))}>active</Button>
-          <Button color={activeFilter === 'completed' ? 'error' : 'primary'}onClick = {()=>dispatch(changeActiveFilter('completed'))}>completed</Button>
+          <Button
+            color={activeFilter === "all" ? "error" : "primary"}
+            onClick={() => dispatch(changeActiveFilter("all"))}
+          >
+            All
+          </Button>
+          <Button
+            color={activeFilter === "active" ? "error" : "primary"}
+            onClick={() => dispatch(changeActiveFilter("active"))}
+          >
+            active
+          </Button>
+          <Button
+            color={activeFilter === "completed" ? "error" : "primary"}
+            onClick={() => dispatch(changeActiveFilter("completed"))}
+          >
+            completed
+          </Button>
         </Box>
         <Box>
-          <Button 
-          onClick = {()=>dispatch(clearCompleted())}
-          variant="text" color="primary">
+          <Button
+            onClick={() => dispatch(clearCompleted())}
+            variant="text"
+            color="primary"
+          >
             Clear completed
           </Button>
         </Box>

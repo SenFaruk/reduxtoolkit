@@ -983,3 +983,107 @@ buttonların onClicklerinde bunları kulanırsam tabiki dspatch ile buttonları 
 
 ````
 
+şimdi ise buttonlara bstığım zaman nunla ilgili kısım content kısmında görünsün.
+
+useSelector kullanarak sliceımın içindeki activeFilter değişkenindeki state almam lasım yeni bir değişken tanımlıyorum adı yine activeFilter olsun
+
+````
+ const activeFilter = useSelector((state) => state.todos.activeFilter);
+ ````
+
+ >useSelector bir Redux Hook'udur ve bir fonksiyon alır. Bu fonksiyon, tüm Redux store'unun tamamına erişebilir ve belirli bir parçasından state değerini döndürür.
+
+>Yukarıdaki kodda, activeFilter adlı değişkene, state.todos.activeFilter'daki değer atandı. state içindeki todos nesnesi bir todos listesini içerir ve activeFilter de todos listesindeki öğelerin filtrelenmesinde kullanılan bir değişkendir.
+
+>u kod, Redux store'unda tanımlı olan "todos" listesindeki öğelerin filtrelenmesinde kullanılan activeFilter değişkenini alır ve bunu activeFilter değişkenine atar. Daha sonra bu değişken uygulama içindeki diğer yerlerde kullanılabilir.
+
+fonsiyonunun dışında  filtered değişkenine boş bir array atatım
+
+````
+let filtered = [];
+````
+
+fonksiyonun içinde ise şöyle bir tanım yaptım
+
+````
+ filtered = items;
+  if (activeFilter !== "all") {
+    filtered = items.filter((todo) =>
+      activeFilter === "active"
+        ? todo.completed === false
+        : todo.completed === true
+    );
+  }
+
+````
+daha önce 
+````
+ const items = useSelector((state) => state.todos.items);
+ ```` 
+ bunu tanımlamıştık ve map( )
+fonsiyonu ile kullanmıştık.
+şimdi filtered ı boş bir array olarak tanımladuk bunuda items a eşitledik
+eğer activeFilter all değilse activeFilter active ise false değilse true olsun.
+
+>Bu kod, bir "items" dizisini filtrelemek için kullanılır ve Redux store'daki "activeFilter" değişkenine göre öğeleri "tamamlanmış" ve "tamamlanmamış" olarak filtreler.
+
+>İlk olarak, filtered değişkeni items dizisine eşitlenir. Bu, başlangıçta filtrelenmemiş tüm öğeleri içeren bir değişken oluşturur.
+
+>Daha sonra, activeFilter değişkeni "all" olmadığı sürece, items dizisi filtrelenir. filter fonksiyonu, items dizisi içindeki her öğe için belirli bir koşulu test eder ve koşulu karşılayan öğeleri yeni bir diziye ekler.
+
+>Yukarıdaki koşul, activeFilter değişkeninin "active" olup olmadığını kontrol eder. Eğer "active" ise, yani filtre "tamamlanmamış" öğeler için ayarlanmışsa, todo.completed === false koşulu kontrol edilir. Eğer "tamamlanmış" öğeler için ayarlanmışsa, todo.completed === true koşulu kontrol edilir.
+
+>Sonuç olarak, filtered değişkeni, sadece belirli koşulu karşılayan öğeleri içeren yeni bir diziye eşitlenir. Bu, uygulama içindeki diğer yerlerde kullanılabilecek filtrelenmiş bir öğeler listesi sağlar.
+
+şimdide clear complated buttonunu yapalım
+ slice ımza giderek yeni bir reducer tanımlıyoruz.
+ ````
+ clearCompleted: (state) => {
+      const filtered = state.items.filter((item) => item.completed === false);
+      state.items = filtered;
+    },
+ ````
+ >Bu kod, Redux kütüphanesi kullanılarak yazılmış bir JavaScript uygulaması içindeki bir parçadır. Bu kod, bir "items" dizisindeki tamamlanmış öğeleri temizlemek için kullanılır.
+
+>Redux'da, uygulama durumunun yönetimi için bir "store" nesnesi kullanılır. Bu "store" nesnesi, "state" olarak adlandırılan bir veri yapısı içerir. Bu "state" nesnesi, "items" adlı bir dizi içerir.
+
+>Bu kodda, "clearCompleted" adlı bir Redux "action creator" fonksiyonu tanımlanmıştır. Bu fonksiyon, "state" nesnesinin "items" dizisindeki tamamlanmış öğeleri temizlemek için kullanılır.
+
+>İlk olarak, "items" dizisi, "filter" fonksiyonu kullanılarak "completed" özelliği "false" olan öğeleri içeren bir "filtered" adlı yeni bir diziye filtrelenir. Bu, tamamlanmış öğelerin kaldırıldığı yeni bir dizi oluşturur.
+
+>Sonrasında, "state.items" özelliği, bu yeni filtrelenmiş dizi ile değiştirilir. Bu, Redux store'da bulunan "items" dizisinin güncellenmesine neden olur ve tamamlanmış öğelerin silinmesini sağlar.
+
+>Sonuç olarak, bu kod Redux store'daki "items" dizisindeki tamamlanmış öğeleri temizlemek için kullanılır ve yeni bir filtrelenmiş dizi oluşturur.
+
+bunu export ediyorum
+````
+export const { addTodo, toggle, destroy, changeActiveFilter, clearCompleted } =
+  todosSlice.actions;
+````
+sonra contentFooter.js te import ediyorum
+````
+import { changeActiveFilter, clearCompleted } from "../redux/todos/todosSlice";
+````
+sonrada dispatch edip kullanıyorum
+````
+<Box>
+          <Button 
+          onClick = {()=>dispatch(clearCompleted())}
+          variant="text" color="primary">
+            Clear completed
+          </Button>
+        </Box>
+````
+## src/components/ContentFooter.js
+````
+<Box>
+          <Button 
+          onClick = {()=>dispatch(clearCompleted())}
+          variant="text" color="primary">
+            Clear completed
+          </Button>
+        </Box>
+````
+
+
+
