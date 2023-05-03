@@ -916,8 +916,8 @@ onun için yeni bir reducer tanımlamaltıyım.
 changeActiveFilter: (state, action) => {
       state.activeFilter = action.payload;
     },
-````    
- Bu kod bloğu bir Redux Toolkit eylem yaratıcısı (action creator) içinde yer alır ve Redux store'da yer alan "todos" adlı bir durumun ("state") "activeFilter" özelliğini güncellemek için kullanılır.
+````    [^1]
+[^1]: Bu kod bloğu bir Redux Toolkit eylem yaratıcısı (action creator) içinde yer alır ve Redux store'da yer alan "todos" adlı bir durumun ("state") "activeFilter" özelliğini güncellemek için kullanılır.
 
 Bu eylem yaratıcısı, "changeActiveFilter" adı altında tanımlanmıştır ve iki parametre alır: "state" ve "action". "state" parametresi, Redux store'daki mevcut durumu temsil eder ve "action" parametresi, store'da gerçekleştirilecek olan eylemi temsil eder.
 
