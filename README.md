@@ -952,9 +952,12 @@ bunu kullanmam için dispatch etmem gerekiyor
 ````
 import { useSelector, useDispatch} from "react-redux";
 ````
+>useDispatch kancası ise Redux deposundaki işlemleri (actions) tetiklemek için kullanılır. Bu kancayı kullanarak, Redux deposunda belirli bir işlemi tetikleyen bir fonksiyonu çağırabilirsiniz.
 
 bunu kullanmak için bir değişkene atamam lazım:
+ aşağıda dispatch değişkenine atatım. 
 ````
+
 const items = useSelector((state) => state.todos.items);
   const itemsLeft = items.filter((item) => !item.completed).length;
   // ==============
