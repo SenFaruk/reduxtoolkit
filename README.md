@@ -1085,5 +1085,78 @@ sonrada dispatch edip kullanıyorum
         </Box>
 ````
 
+### selector
+ Content.js ve ContentFooter.js dosyalarımıza baktığımız da
+useSelector kullandığımız yerler varbunlar:
+````
+ const items = useSelector((state) => state.todos.items);
+````
+````
+const items = useSelector((state) => state.todos.items); //contentFooter
+````
+````
+const activeFilter = useSelector((state) => state.todos.activeFilter);
+//contentFooter
+````
 
+**hatırlayalım:**
+> <useSelector> fonksiyonu, React uygulamalarında Redux store'undan state seçmek için kullanılan bir React Hook'tur. Redux Toolkit ile kullanımı oldukça kolaydır ve örneklerle adım adım açıklayabiliriz.
 
+> Redux slice oluşturalım
+````
+import { createSlice } from '@reduxjs/toolkit'
+
+export const counterSlice = createSlice({
+  name: 'counter',
+  initialState: {
+    value: 0
+  },
+  reducers: {
+    increment: (state) => {
+      state.value += 1
+    },
+    decrement: (state) => {
+      state.value -= 1
+    }
+  }
+})
+
+export const { increment, decrement } = counterSlice.actions
+
+export default counterSlice.reducer
+
+````
+>Bu dosya, <createSlice> fonksiyonunu kullanarak bir Redux slice oluşturur. Bu slice, counter adlı bir slice ve value adlı bir başlangıç state'ine sahip bir sayaçtan oluşur. increment ve decrement adlı iki reducer da bu slice içinde tanımlanır.
+
+>Daha sonra, Redux Toolkit store'u oluşturmanız gerekir. Aşağıdaki gibi bir store.js dosyası oluşturabilirsiniz:
+````
+import { configureStore } from '@reduxjs/toolkit'
+import counterReducer from '.counter/counterSlice'
+
+export default configureStore({
+  reducer: {
+    counter: counterReducer
+  }
+})
+
+````
+>Bu dosya, configureStore fonksiyonunu kullanarak bir Redux Toolkit store oluşturur. counterReducer olarak adlandırılan bir azaltıcı, counterSlice.js dosyasındaki azaltıcıya işaret eder.
+>Son olarak, useSelector fonksiyonunu kullanarak store'dan state seçebilirsiniz. Örneğin, Counter bileşeninin aşağıdaki gibi görünmesi gerekir:
+
+````
+import { useSelector } from 'react-redux'
+
+function Counter() {
+  const count = useSelector((state) => state.counter.value)
+
+  return (
+    <div>
+      <span>{count}</span>
+      <button>Increment</button>
+    </div>
+  )
+}
+
+export default Counter
+
+````
