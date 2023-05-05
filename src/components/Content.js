@@ -4,14 +4,19 @@ import Checkbox from "@mui/material/Checkbox";
 import Typography from "@mui/material/Typography";
 import { Box, Button } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
-import { destroy, toggle } from "../redux/todos/todosSlice";
+import {
+  destroy,
+  toggle,
+  selectTodos,
+  selectFilteredTodos,
+} from "../redux/todos/todosSlice";
 
-let filtered = [];
+// let filtered = [];
 
 const Content = () => {
   const dispatch = useDispatch();
-  const items = useSelector((state) => state.todos.items);
-  const activeFilter = useSelector((state) => state.todos.activeFilter);
+  // const items = useSelector(selectTodos);
+  // const activeFilter = useSelector((state) => state.todos.activeFilter);
 
   const handleCheckboxChange = (id) => {
     dispatch(toggle({ id }));
@@ -22,17 +27,19 @@ const Content = () => {
     }
   };
 
-  filtered = items;
-  if (activeFilter !== "all") {
-    filtered = items.filter((todo) =>
-      activeFilter === "active"
-        ? todo.completed === false
-        : todo.completed === true
-    );
-  }
+  // filtered = items;
+  // if (activeFilter !== "all") {
+  //   filtered = items.filter((todo) =>
+  //     activeFilter === "active"
+  //       ? todo.completed === false
+  //       : todo.completed === true
+  //   );
+  // }
+
+  const filteredTodos = useSelector(selectFilteredTodos);
   return (
     <>
-      {filtered.map((item, index) => (
+      {filteredTodos.map((item, index) => (
         <Box
           key={item.id}
           sx={{

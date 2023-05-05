@@ -1087,7 +1087,7 @@ sonrada dispatch edip kullanıyorum
 
 ### selector
  Content.js ve ContentFooter.js dosyalarımıza baktığımız da
-useSelector kullandığımız yerler varbunlar:
+useSelector kullandığımız yerler var bunlar:
 ````
  const items = useSelector((state) => state.todos.items);
 ````
@@ -1160,3 +1160,518 @@ function Counter() {
 export default Counter
 
 ````
+araya girdi yaptık devam edelim.
+### selector
+
+belki bir çok yerde selector kullanmam gerekecek her seferinde 
+````
+const items = useSelector((state) => state.todos.items);
+````
+şeklinde yazmam külfetli olacak ne yapmalıyım.
+slice ımıza geliriz yeni bir değişkene bu state atarız ve expor ederiz.
+````
+export const selectTodos = (state)=> (state.todos.items);
+````
+artık selectTodos u impor edip kullanabilirim.
+
+
+````
+import { destroy, toggle,selectTodos } from "../redux/todos/todosSlice";
+
+````
+````
+  const items = useSelector(selectTodos);
+
+````
+değişikleillerle beraber kodlarımız şöyle oldu
+
+### src/redux/todos/todosSlice.js
+````
+import { createSlice } from "@reduxjs/toolkit";
+
+export const todosSlice = createSlice({
+  name: "todos",
+  initialState: {
+    items: [
+      {
+        id: "1",
+        title: "learn polinomlar",
+        completed: false,
+      },
+      {
+        id: "2",
+        title: "learn algoritma",
+        completed: false,
+      },
+    ],
+    activeFilter: "all",
+  },
+  reducers: {
+    addTodo: (state, action) => {
+      state.items.push(action.payload);
+    },
+    toggle: (state, action) => {
+      const { id } = action.payload;
+      const item = state.items.find((item) => item.id === id);
+      item.completed = !item.completed;
+    },
+
+    destroy: (state, action) => {
+      const id = action.payload;
+      const filtered = state.items.filter((item) => item.id !== id);
+      state.items = filtered;
+    },
+    changeActiveFilter: (state, action) => {
+      state.activeFilter = action.payload;
+    },
+    clearCompleted: (state) => {
+      const filtered = state.items.filter((item) => item.completed === false);
+      state.items = filtered;
+    },
+  },
+});
+export const selectTodos = (state) => state.todos.items;
+
+export const { addTodo, toggle, destroy, changeActiveFilter, clearCompleted } =
+  todosSlice.actions;
+
+export default todosSlice.reducer;
+
+````
+### src/components/Content.js
+````
+import React from "react";
+
+import Checkbox from "@mui/material/Checkbox";
+import Typography from "@mui/material/Typography";
+import { Box, Button } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import { destroy, toggle, selectTodos } from "../redux/todos/todosSlice";
+
+let filtered = [];
+
+const Content = () => {
+  const dispatch = useDispatch();
+  const items = useSelector(selectTodos);
+  const activeFilter = useSelector((state) => state.todos.activeFilter);
+
+  const handleCheckboxChange = (id) => {
+    dispatch(toggle({ id }));
+  };
+  const handleDestroy = (id) => {
+    if (window.confirm("Are you sure ")) {
+      dispatch(destroy(id));
+    }
+  };
+
+  filtered = items;
+  if (activeFilter !== "all") {
+    filtered = items.filter((todo) =>
+      activeFilter === "active"
+        ? todo.completed === false
+        : todo.completed === true
+    );
+  }
+  return (
+    <>
+      {filtered.map((item, index) => (
+        <Box
+          key={item.id}
+          sx={{
+            width: "80%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            borderBottom: "3px solid black",
+            mb: 3,
+          }}
+        >
+          <Box
+            sx={{
+              width: "60%",
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
+            }}
+          >
+            <Checkbox
+              checked={item.completed}
+              onChange={() => handleCheckboxChange(item.id)}
+              inputProps={{
+                "aria-label": "controlled",
+              }}
+            />
+
+            <Typography
+              variant="body1"
+              color="initial"
+              sx={{
+                textDecoration: item.completed ? "line-through" : "none",
+              }}
+            >
+              {index + 1} - {item.title}
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleDestroy(item.id)}
+          >
+            sil
+          </Button>
+        </Box>
+      ))}
+    </>
+  );
+};
+
+export default Content;
+
+````
+
+### src/components/ContentFooter.js
+````
+import React from "react";
+import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
+import { Box } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  changeActiveFilter,
+  clearCompleted,
+  selectTodos,
+} from "../redux/todos/todosSlice";
+
+const ContentFooter = () => {
+  const items = useSelector(selectTodos);
+  const itemsLeft = items.filter((item) => !item.completed).length;
+  // ==============
+
+  const activeFilter = useSelector((state) => state.todos.activeFilter);
+  const dispatch = useDispatch();
+
+  return (
+    <>
+      <Box
+        sx={{
+          width: "90%",
+          display: "flex",
+          justifyContent: "space-between",
+        }}
+      >
+        <Box>
+          <Typography variant="body1" color="initial">
+            {itemsLeft} item{itemsLeft > 1 && "s"} left
+          </Typography>
+        </Box>
+        <Box
+          sx={{
+            display: "flex",
+            width: "30%",
+            justifyContent: "space-between",
+          }}
+        >
+          <Button
+            color={activeFilter === "all" ? "error" : "primary"}
+            onClick={() => dispatch(changeActiveFilter("all"))}
+          >
+            All
+          </Button>
+          <Button
+            color={activeFilter === "active" ? "error" : "primary"}
+            onClick={() => dispatch(changeActiveFilter("active"))}
+          >
+            active
+          </Button>
+          <Button
+            color={activeFilter === "completed" ? "error" : "primary"}
+            onClick={() => dispatch(changeActiveFilter("completed"))}
+          >
+            completed
+          </Button>
+        </Box>
+        <Box>
+          <Button
+            onClick={() => dispatch(clearCompleted())}
+            variant="text"
+            color="primary"
+          >
+            Clear completed
+          </Button>
+        </Box>
+      </Box>
+    </>
+  );
+};
+
+export default ContentFooter;
+
+````
+biz <Content.js > te şöyle bir kod yazmıştık.
+
+````
+filtered = items;
+  if (activeFilter !== "all") {
+    filtered = items.filter((todo) =>
+      activeFilter === "active"
+        ? todo.completed === false
+        : todo.completed === true
+    );
+  }
+````
+bunu da bir selector kullanarak yapabilirim
+şöyleki:
+
+slice imın içene gelip aşagıdaki kodu ekledim
+````
+export const selectFilteredTodos = (state) => {
+  if (state.todos.activeFilter === "all") {
+    return state.todos.items;
+  }
+
+  return state.todos.items.filter((item) =>
+    state.todos.activeFilter === "active"
+      ? item.completed === false
+      : item.completed === true
+  );
+};
+
+
+````
+### todoSlice.js 
+
+````
+import { createSlice } from "@reduxjs/toolkit";
+
+export const todosSlice = createSlice({
+  name: "todos",
+  initialState: {
+    items: [
+      {
+        id: "1",
+        title: "learn polinomlar",
+        completed: false,
+      },
+      {
+        id: "2",
+        title: "learn algoritma",
+        completed: false,
+      },
+    ],
+    activeFilter: "all",
+  },
+  reducers: {
+    addTodo: (state, action) => {
+      state.items.push(action.payload);
+    },
+    toggle: (state, action) => {
+      const { id } = action.payload;
+      const item = state.items.find((item) => item.id === id);
+      item.completed = !item.completed;
+    },
+
+    destroy: (state, action) => {
+      const id = action.payload;
+      const filtered = state.items.filter((item) => item.id !== id);
+      state.items = filtered;
+    },
+    changeActiveFilter: (state, action) => {
+      state.activeFilter = action.payload;
+    },
+    clearCompleted: (state) => {
+      const filtered = state.items.filter((item) => item.completed === false);
+      state.items = filtered;
+    },
+  },
+});
+export const selectTodos = (state) => state.todos.items;
+
+export const selectFilteredTodos = (state) => {
+  if (state.todos.activeFilter === "all") {
+    return state.todos.items;
+  }
+
+  return state.todos.items.filter((item) =>
+    state.todos.activeFilter === "active"
+      ? item.completed === false
+      : item.completed === true
+  );
+};
+
+export const { addTodo, toggle, destroy, changeActiveFilter, clearCompleted } =
+  todosSlice.actions;
+
+export default todosSlice.reducer;
+
+````
+artık bunu gidip kullana bilirim
+### Content.js
+
+````
+import React from "react";
+
+import Checkbox from "@mui/material/Checkbox";
+import Typography from "@mui/material/Typography";
+import { Box, Button } from "@mui/material";
+import { useSelector, useDispatch } from "react-redux";
+import {
+  destroy,
+  toggle,
+  selectTodos,
+  selectFilteredTodos,
+} from "../redux/todos/todosSlice";
+
+// let filtered = [];
+
+const Content = () => {
+  const dispatch = useDispatch();
+  // const items = useSelector(selectTodos);
+  // const activeFilter = useSelector((state) => state.todos.activeFilter);
+
+  const handleCheckboxChange = (id) => {
+    dispatch(toggle({ id }));
+  };
+  const handleDestroy = (id) => {
+    if (window.confirm("Are you sure ")) {
+      dispatch(destroy(id));
+    }
+  };
+
+  // filtered = items;
+  // if (activeFilter !== "all") {
+  //   filtered = items.filter((todo) =>
+  //     activeFilter === "active"
+  //       ? todo.completed === false
+  //       : todo.completed === true
+  //   );
+  // }
+
+  const filteredTodos = useSelector(selectFilteredTodos);
+  return (
+    <>
+      {filteredTodos.map((item, index) => (
+        <Box
+          key={item.id}
+          sx={{
+            width: "80%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            borderBottom: "3px solid black",
+            mb: 3,
+          }}
+        >
+          <Box
+            sx={{
+              width: "60%",
+              display: "flex",
+              justifyContent: "flex-start",
+              alignItems: "center",
+            }}
+          >
+            <Checkbox
+              checked={item.completed}
+              onChange={() => handleCheckboxChange(item.id)}
+              inputProps={{
+                "aria-label": "controlled",
+              }}
+            />
+
+            <Typography
+              variant="body1"
+              color="initial"
+              sx={{
+                textDecoration: item.completed ? "line-through" : "none",
+              }}
+            >
+              {index + 1} - {item.title}
+            </Typography>
+          </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={() => handleDestroy(item.id)}
+          >
+            sil
+          </Button>
+        </Box>
+      ))}
+    </>
+  );
+};
+
+export default Content;
+
+````
+küçük bir ekleme yapalım yeni görevler girerken hiç bir şey yapmadan enter bassamda boş bir satır ekliyor...
+
+onu düzeltelim.
+
+### Form.js
+````
+const handleSubmit = (e) => {
+    if (!title) {
+      return;
+    }
+    e.preventDefault();
+    dispatch(addTodo({ id: nanoid(), title, completed: false }));
+    setTitle("");
+  };
+````
+````
+import { TextField, InputAdornment, IconButton, Box } from "@mui/material";
+import { Search } from "@mui/icons-material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addTodo } from "../redux/todos/todosSlice";
+import { nanoid } from "@reduxjs/toolkit";
+
+const Form = () => {
+  const [title, setTitle] = useState("");
+  console.log(title);
+
+  const dispatch = useDispatch();
+
+  const handleSubmit = (e) => {
+    if (!title) {
+      return;
+    }
+    e.preventDefault();
+    dispatch(addTodo({ id: nanoid(), title, completed: false }));
+    setTitle("");
+  };
+  return (
+    <>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          id="input-with-icon-textfield"
+          label="todos"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="what needs to be done"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <IconButton>
+                  <KeyboardArrowDownIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      </form>
+    </>
+  );
+};
+
+export default Form;
+
+````
+
+
+
+
+
+
+
