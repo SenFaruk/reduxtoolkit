@@ -1668,6 +1668,222 @@ const Form = () => {
 export default Form;
 
 ````
+### prepare tanımı
+tododSlice.js tanımladığımız addTodo
+reducer ımızı  yani şu kısım
+````
+...
+...
+....
+
+reducers: {
+    addTodo: (state, action) => {
+      state.items.push(action.payload);
+    },
+    ..
+    ..
+    ..
+````
+bunu Form.js içinde dispatch ederek kullanmıştık.
+
+````
+ dispatch(addTodo({ id: nanoid(), title, completed: false }));
+````
+
+burada id, title, ve complated e gönderiyoruz.diyelim ki bu bu
+todo elemanı ekleme işlemi bir başka com
+ponentente daha yapılabiliyor olsun veya
+birden fazla komponenten yapıtıyorsun
+o componenetlerin her birine nanoid import etmeniz ve id ye karşılık olarak vermeniz gerekecek bunu önüne geçmek için şöyle yapıyoruz.
+reducers içinde prepare diye bir tanım var bunu kullanabiliyoruz.
+yaptığı iş aslında şöyle birşey:
+
+>prepare fonksiyonu sayesinde, reducer fonksiyonlarına geçirilecek olan action objeleri, önceden işlenerek daha kullanışlı hale getirilebilir.
+
+>örneek olsun diye counter üzerinden bir daha gidelim.
+>1.Öncelikle, createSlice fonksiyonu kullanılarak bir reducer tanımı oluşturulur. Bu tanım, bir name özelliği ve bir dizi reducer fonksiyonu içerir.
+>
+````
+import { createSlice } from '@reduxjs/toolkit'
+
+const mySlice = createSlice({
+  name: 'mySlice',
+  initialState: { value: 0 },
+  reducers: {
+    increment: (state) => {
+      state.value++
+    },
+    decrement: (state) => {
+      state.value--
+    },
+    // ...diğer reducer fonksiyonları
+  },
+})
+
+````
+>reducers nesnesi içindeki bir reducer fonksiyonunda prepare fonksiyonu kullanılabilir. Bu fonksiyon, reducer fonksiyonunun öncesi veya sonrasında çalıştırılabilir.
+>Örneğin, increment reducer fonksiyonunda bir prepare fonksiyonu kullanarak, reducer fonksiyonuna gelen argümanları işleyebiliriz:
+````
+const mySlice = createSlice({
+  name: 'mySlice',
+  initialState: { value: 0 },
+  reducers: {
+    increment: {
+      prepare: (amount = 1) => {
+        return { payload: { amount } }
+      },
+      reducer: (state, action) => {
+        state.value += action.payload.amount
+      },
+    },
+    // ...diğer reducer fonksiyonları
+  },
+})
+````
+>Burada increment fonksiyonu içinde prepare fonksiyonu, reducer fonksiyonu çalıştırılmadan önce çalıştırılacaktır. Bu fonksiyon, payload özelliği içinde reducer fonksiyonuna geçirilecek olan bir obje döndürür. Bu obje, action objesi içinde payload özelliği altında yer alır.
+
+>Örneğin, dispatch(mySlice.actions.increment(5)) şeklinde bir çağrı yapılırsa, prepare fonksiyonu 5 argümanı ile çağrılacak ve bu fonksiyon, { payload: { amount: 5 } } şeklinde bir obje döndürecektir. Bu obje, reducer fonksiyonuna geçirilecek olan action objesi içinde payload özelliği altında yer alacaktır.
+
+gibi devam edelim
+# redux/todos/todosSlice.js
+
+````
+import { createSlice, nanoid } from "@reduxjs/toolkit";
+
+export const todosSlice = createSlice({
+  name: "todos",
+  initialState: {
+    items: [
+      {
+        id: "1",
+        title: "learn polinomlar",
+        completed: false,
+      },
+      {
+        id: "2",
+        title: "learn algoritma",
+        completed: false,
+      },
+    ],
+    activeFilter: "all",
+  },
+  reducers: {
+    addTodo: {
+      prepare: ({ title }) => {
+        return {
+          payload: {
+            id: nanoid(),
+            completed: false,
+            title,
+          },
+        };
+      },
+      reducer: (state, action) => {
+        state.items.push(action.payload);
+      },
+    },
+
+    // addTodo: (state, action) => {
+    //   state.items.push(action.payload);
+    // },
+    toggle: (state, action) => {
+      const { id } = action.payload;
+      const item = state.items.find((item) => item.id === id);
+      item.completed = !item.completed;
+    },
+
+    destroy: (state, action) => {
+      const id = action.payload;
+      const filtered = state.items.filter((item) => item.id !== id);
+      state.items = filtered;
+    },
+    changeActiveFilter: (state, action) => {
+      state.activeFilter = action.payload;
+    },
+    clearCompleted: (state) => {
+      const filtered = state.items.filter((item) => item.completed === false);
+      state.items = filtered;
+    },
+  },
+});
+export const selectTodos = (state) => state.todos.items;
+
+export const selectFilteredTodos = (state) => {
+  if (state.todos.activeFilter === "all") {
+    return state.todos.items;
+  }
+
+  return state.todos.items.filter((item) =>
+    state.todos.activeFilter === "active"
+      ? item.completed === false
+      : item.completed === true
+  );
+};
+export const selectActiveFilter = (state) => state.todos.activeFilter;
+
+export const { addTodo, toggle, destroy, changeActiveFilter, clearCompleted } =
+  todosSlice.actions;
+
+export default todosSlice.reducer;
+
+````
+öceki kısım yoruma aldım . sonra form .js ilse şöyle değişti.
+### Component/ Form.js
+````
+import { TextField, InputAdornment, IconButton, Box } from "@mui/material";
+import { Search } from "@mui/icons-material";
+import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
+import React, { useState } from "react";
+import { useDispatch } from "react-redux";
+import { addTodo } from "../redux/todos/todosSlice";
+
+const Form = () => {
+  const [title, setTitle] = useState("");
+  console.log(title);
+
+  const dispatch = useDispatch();
+
+  const handleSubmit = (e) => {
+    if (!title) {
+      return;
+    }
+    e.preventDefault();
+    dispatch(addTodo({ title }));
+    setTitle("");
+  };
+  return (
+    <>
+      <form onSubmit={handleSubmit}>
+        <TextField
+          id="input-with-icon-textfield"
+          label="todos"
+          value={title}
+          onChange={(e) => setTitle(e.target.value)}
+          placeholder="what needs to be done"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <IconButton>
+                  <KeyboardArrowDownIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+      </form>
+    </>
+  );
+};
+
+export default Form;
+
+````
+
+
+
+
+
+
 
 
 
